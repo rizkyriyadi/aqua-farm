@@ -1,3 +1,6 @@
+run auto migrate first, cd migrate then go run migrate.go
+after that cd .. then you can run main file by using go run main.go
+
 # Create Farm
 localhost:3000/createfarm
 
