@@ -1,5 +1,13 @@
-run auto migrate first, cd migrate then go run migrate.go
-after that cd .. then you can run main file by using go run main.go
+run auto migration first by cd to migration folder
+
+then back to root repo and run main.go
+
+here how to :
+
+1. cd migration
+2. go run migrate.go
+3. cd ..
+4. go run main.go
 
 # Create Farm
 localhost:3000/createfarm
