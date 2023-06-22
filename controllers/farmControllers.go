@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// POST
 func FarmCreate(c *gin.Context) {
 	// Get Body
 	var body struct {
@@ -37,4 +38,57 @@ func FarmCreate(c *gin.Context) {
 	}
 	// Return
 
+}
+
+// GET
+// GET ALL
+func GetAll(db *gorm.DB) ([]models.Farm, error) {
+	var farms []models.Farm
+	err := db.Model(&models.Farm{}).Preload("Pond").Find(&farms).Error
+	return farms, err
+}
+
+// Get Farm with Ponds
+func Aqua(c *gin.Context) {
+	farms, err := GetAll(initializers.DB)
+	if err != nil {
+		if len(farms) == 0 {
+			c.JSON(404, gin.H{
+				"Error": "There is no data in Table",
+			})
+		}
+		// Tangani kesalahan
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"Farms": farms})
+}
+
+// GET All by ID
+func GetID(db *gorm.DB, id string) ([]models.Farm, error) {
+	var farms []models.Farm
+	err := db.Model(&models.Farm{}).Preload("Pond").Where("id = ?", id).Find(&farms).Error
+	return farms, err
+}
+
+// Get Farms by ID
+func FarmIndexID(c *gin.Context) {
+	id := c.Param("id")
+	farms, err := GetID(initializers.DB, id)
+	if id == gorm.ErrRecordNotFound.Error() {
+		c.JSON(404, gin.H{
+			"Error": "There is no id = " + id + " in Ponds Table",
+		})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	}
+	// if err != nil {
+	// 	// Tangani kesalahan
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	c.JSON(http.StatusOK, gin.H{"Farms": farms})
 }
