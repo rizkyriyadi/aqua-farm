@@ -1,30 +1,23 @@
-run auto migration first by cd to migration folder
-
-then back to root repo and run main.go
-
-here how to :
-
-1. cd migration
-2. go run migrate.go
-3. cd ..
-4. go run main.go
-
 # Create Farm
 localhost:3000/createfarm
-
-{
-
-  "farm_name": "farmName"
-  
-}
-
-
+# Fetch Farm 
+localhost:3000/farms
+# Fetch Farm by ID 
+localhost:3000/farms/id
+# Update Farm
+localhost:3000/farms/id
+# Delete Farm
+localhost:3000/farms/id
 
 # Create Pond
 localhost:3000/createpond
-{
+# Fetch Pond
+localhost:3000/ponds
+# Fetch Pond by ID
+localhost:3000/ponds/id
+# Update Pond
+localhost:3000/ponds/id
+# Delete Pond
+localhost:3000/ponds/id
 
-    "pond_name ": "pondName",
-    
-    "farm_id": "refer to farm"
-}
+
