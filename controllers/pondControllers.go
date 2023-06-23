@@ -68,7 +68,7 @@ func PondsIndexID(c *gin.Context) {
 	if result.Error != nil {
 		if id != gorm.ErrRecordNotFound.Error() {
 			c.JSON(404, gin.H{
-				"Pesan": "Not Found",
+				"Error": "There is no id = " + id + " in Ponds Table",
 			})
 		}
 		panic("Error While Getting data from Ponds")
@@ -79,4 +79,46 @@ func PondsIndexID(c *gin.Context) {
 	})
 }
 
-// Get Pond by ID
+// PUT
+func PondUpdate(c *gin.Context) {
+	// Get id by URL
+	id := c.Param("id")
+
+	// Get data from body
+	var body struct {
+		PondName string `json:"pond_name"`
+		FarmID   int    `json:"farm_id"`
+	}
+
+	c.Bind(&body)
+
+	// Find data were updating
+	var pond models.Pond
+	initializers.DB.First(&pond, id)
+
+	// Update
+	initializers.DB.Model(&pond).Updates(models.Pond{
+		PondName: body.PondName, FarmID: uint(body.FarmID)})
+	// Respon
+	c.JSON(200, gin.H{
+		"Updated": pond,
+	})
+}
+
+// DELETE
+func PondDelete(c *gin.Context) {
+	// Get id by URL
+	id := c.Param("id")
+
+	// Find data were delete
+	var pond models.Pond
+	initializers.DB.First(&pond, id)
+
+	// Delete
+	initializers.DB.Where("id = ?", id).Delete(&pond)
+
+	// Respon
+	c.JSON(200, gin.H{
+		"Updated": pond,
+	})
+}

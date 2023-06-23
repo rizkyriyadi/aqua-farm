@@ -68,27 +68,65 @@ func Aqua(c *gin.Context) {
 // GET All by ID
 func GetID(db *gorm.DB, id string) ([]models.Farm, error) {
 	var farms []models.Farm
-	err := db.Model(&models.Farm{}).Preload("Pond").Where("id = ?", id).Find(&farms).Error
-	return farms, err
+	result := db.Model(&models.Farm{}).Preload("Pond").Where("id = ?", id).Find(&farms).Error
+
+	return farms, result
 }
 
 // Get Farms by ID
 func FarmIndexID(c *gin.Context) {
 	id := c.Param("id")
 	farms, err := GetID(initializers.DB, id)
-	if id == gorm.ErrRecordNotFound.Error() {
-		c.JSON(404, gin.H{
-			"Error": "There is no id = " + id + " in Ponds Table",
-		})
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-	}
-	// if err != nil {
-	// 	// Tangani kesalahan
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
 
+	// Validasi
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+
+	}
+	// Return
 	c.JSON(http.StatusOK, gin.H{"Farms": farms})
+}
+
+// PUT
+
+// Update Farm
+
+func FarmUpdate(c *gin.Context) {
+	// Get id by URL
+	id := c.Param("id")
+
+	// Get data from body
+	var body struct {
+		FarmName string `json:"farm_name"`
+	}
+
+	c.Bind(&body)
+
+	// Find data were updating
+	var farm models.Farm
+	initializers.DB.First(&farm, id)
+
+	// Update
+	initializers.DB.Model(&farm).Updates(models.Farm{
+		FarmName: body.FarmName})
+	// Respon
+	c.JSON(200, gin.H{
+		"Updated": farm,
+	})
+}
+
+// DELETE
+func FarmDelete(c *gin.Context) {
+	// Get id by URL
+	id := c.Param("id")
+
+	// Find data were Delete
+	var farm models.Farm
+	initializers.DB.Where("id = ?", id).Delete(&farm)
+
+	c.JSON(200, gin.H{
+		"Deleted": farm,
+	})
 }
